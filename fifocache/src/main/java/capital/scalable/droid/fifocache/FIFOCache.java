@@ -34,7 +34,14 @@ public class FIFOCache {
 
     private long size = DEFAULT_SIZE;
     private String subdirectory = DEFAULT_DIRECTORY;
-    private @NonNull final Context context;
+
+    @NonNull private final Context context;
+    @NonNull private final Comparator<? super File> mostRecentComparator = new Comparator<File>() {
+        @Override
+        public int compare(File f1, File f2) {
+            return Long.compare(f1.lastModified(), f2.lastModified());
+        }
+    };
 
     public FIFOCache(@NonNull Context context) {
         this.context = context;
@@ -119,11 +126,8 @@ public class FIFOCache {
      * @throws IOException if the provided inputStream is not accessible, or the cache folder cannot be opened.
      * @throws IllegalArgumentException if the provided inputStream's size is 0, or is larger than the size of the cache.
      */
-    public File cache(InputStream inputStream, String name, long streamSize) throws IOException {
-        if (inputStream == null) {
-            throw new IllegalArgumentException("The provided stream was null");
-        }
-        if (streamSize <= 0) {
+    public File cache(@NonNull InputStream inputStream, @NonNull String name, long streamSize) throws IOException {
+        if (streamSize < 0) {
             throw new IllegalArgumentException("The provided stream size is smaller than 0");
         }
         if (streamSize > size) {
@@ -193,12 +197,7 @@ public class FIFOCache {
         File[] files = dir.listFiles();
 
         //Oldest file first
-        Arrays.sort(files, new Comparator<File>() {
-            @Override
-            public int compare(File f1, File f2) {
-                return Long.compare(f1.lastModified(), f2.lastModified());
-            }
-        });
+        Arrays.sort(files, mostRecentComparator);
 
         //Delete until satisfied
         for (File file : files) {
