@@ -42,7 +42,7 @@ public class FIFOCacheTest {
                 .getResources()
                 .getAssets()
                 .open(TEST_FILE);
-        cache = new FIFOCache(new CacheManagerMockContext(folder));
+        cache = new FIFOCache(new FIFOCacheMockContext(folder));
     }
 
     @After
@@ -53,87 +53,14 @@ public class FIFOCacheTest {
     }
 
     @Test
-    public void defaultFolder() {
-        assertThat(cache.getSubdirectory(), equalTo(FIFOCache.DEFAULT_DIRECTORY));
-    }
+    public void setDirectoryOldDirectoryNonEmpty() throws IOException {
+        cache.cache(inputStream, TEST_FILE, TEST_FILE_SIZE);
 
-    @Test
-    public void setNullDirectory() {
         try {
-            cache.setSubdirectory(null);
-            Assert.fail("setSubdirectory with null directory did not throw an exception");
-        } catch (NullPointerException e) {
-            assertThat(e.getMessage(), containsString("null"));
-        }
-    }
-
-    @Test
-    public void setDirectory() {
-        final String newDir = "random";
-        cache.setSubdirectory(newDir);
-        assertThat(newDir, equalTo(cache.getSubdirectory()));
-    }
-
-    @Test
-    public void setDirectoryOldDirectoryNonEmpty() {
-        try {
-            cache.cache(inputStream, TEST_FILE, TEST_FILE_SIZE);
-        } catch (IOException e) {
-            Assert.fail("Exception thrown from caching file");
-        }
-        final String newDir = "random";
-        try {
-            cache.setSubdirectory(newDir);
+            cache.setSubdirectory("newDir");
             Assert.fail("Exception was not thrown when changing the directory");
         } catch (IllegalStateException e) {
-            assertThat(e.getMessage(), containsString("is not empty"));
-        }
-    }
-
-    @Test
-    public void defaultSize() {
-        assertThat(cache.getSize(), is(FIFOCache.DEFAULT_SIZE));
-    }
-
-    @Test
-    public void setSize() {
-        long originalSize = cache.getSize();
-        long newSize = new Random().nextLong();
-
-        //Make sure it is different
-        while (originalSize == newSize) {
-            newSize = new Random().nextLong();
-        }
-
-        cache.setSize(newSize);
-        assertThat(newSize, is(cache.getSize()));
-    }
-
-    @Test
-    public void cacheInputSizeTooLarge() throws Exception {
-        long originalSize = cache.getSize();
-        long fileSize = new Random().nextLong();
-
-        while (originalSize >= fileSize) {
-            fileSize = new Random().nextLong();
-        }
-
-        try {
-            cache.cache(inputStream, TEST_FILE, fileSize);
-            Assert.fail("Expected IllegalArgumentException");
-        } catch (IllegalArgumentException e) {
-            assertThat(e.getMessage(), containsString("size"));
-        }
-    }
-
-    @Test
-    public void cacheInputSizeZero() throws Exception {
-        long fileSize = 0;
-        try {
-            cache.cache(inputStream, TEST_FILE, fileSize);
-            Assert.fail("Expected IllegalArgumentException");
-        } catch (IllegalArgumentException e) {
-            assertThat(e.getMessage(), containsString("size"));
+            assertThat(e.getMessage(), is("Current cache directory is not empty"));
         }
     }
 
@@ -179,8 +106,7 @@ public class FIFOCacheTest {
     public void testClearCache() throws Exception {
         File file = cache.cache(inputStream, TEST_FILE, TEST_FILE_SIZE);
         assertThat(file, is(notNullValue()));
-
         cache.clear();
-        assertThat(!file.exists(), is(true));
+        assertThat(file.exists(), is(false));
     }
 }

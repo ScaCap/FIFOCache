@@ -11,13 +11,13 @@ import org.junit.rules.TemporaryFolder;
 import java.io.File;
 import java.io.IOException;
 
-public class CacheManagerMockContext extends MockContext {
+public class FIFOCacheMockContext extends MockContext {
 
     private static final String TEST_CACHE_FOLDER = "cache";
     private final File cacheDir;
     private final ContentResolver contentResolver = new MockContentResolver();
 
-    public CacheManagerMockContext(TemporaryFolder temporaryFolder) throws IOException {
+    public FIFOCacheMockContext(TemporaryFolder temporaryFolder) throws IOException {
         this.cacheDir = temporaryFolder.newFolder(TEST_CACHE_FOLDER);
     }
 

@@ -1,18 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="capital.scalable.droid.fifocache.MainActivity">
+    android:orientation="vertical"
+    tools:context="capital.scalable.droid.fifocache.app.MainActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:orientation="horizontal">
+        <TextView
+            android:text="Set cache size"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
-</android.support.constraint.ConstraintLayout>
+        <EditText
+            android:id="@+id/cacheSizeInput"
+            android:hint="(in bytes)"
+            android:imeOptions="actionDone"
+            android:inputType="number"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/cacheFileButton"
+        android:text="Add file to cache (file size 7,945 bytes)"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/clearCacheButton"
+        android:text="Clear cache"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+</LinearLayout>
