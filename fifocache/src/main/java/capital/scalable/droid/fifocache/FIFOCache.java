@@ -113,7 +113,11 @@ public class FIFOCache {
      * @throws IllegalArgumentException if the provided content's size is 0, or is larger than the size of the cache.
      */
     public File cache(@NonNull Uri uri, String name, long size) throws IOException {
-        return cache(context.getContentResolver().openInputStream(uri), name, size);
+        InputStream inputStream = context.getContentResolver().openInputStream(uri);
+        if (inputStream == null) {
+            throw new IllegalArgumentException("The provided Uri generated a null stream");
+        }
+        return cache(inputStream, name, size);
     }
 
     /**
@@ -127,8 +131,8 @@ public class FIFOCache {
      * @throws IllegalArgumentException if the provided inputStream's size is 0, or is larger than the size of the cache.
      */
     public File cache(@NonNull InputStream inputStream, @NonNull String name, long streamSize) throws IOException {
-        if (streamSize < 0) {
-            throw new IllegalArgumentException("The provided stream size is smaller than 0");
+        if (streamSize <= 0) {
+            throw new IllegalArgumentException("The provided stream size is less than or equal to 0");
         }
         if (streamSize > size) {
             throw new IllegalArgumentException("The provided stream size is larger than the cache");

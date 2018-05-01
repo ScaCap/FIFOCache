@@ -64,7 +64,7 @@ class FIFOCacheUnitTest {
     @Test
     fun `caching a file of negative size throws an IllegalArgumentException`() {
         thrown.expect(IllegalArgumentException::class.java)
-        thrown.expectMessage(`is`("The provided stream size is smaller than 0"))
+        thrown.expectMessage(`is`("The provided stream size is less than or equal to 0"))
         cache.cache(inputStream, TEST_FILE, -1)
     }
 
